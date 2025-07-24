@@ -13,6 +13,7 @@ const PredictionForm = () => {
   });
 
   const [result, setResult] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -20,21 +21,38 @@ const PredictionForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Sending data:', formData); // Log the data being sent
+    setLoading(true);
+    console.log('Sending data:', formData);
+    
     try {
-      const response = await fetch('http://127.0.0.1:8000/predict/', {
+      // Use environment variable for API URL, fallback to localhost for development
+      const apiUrl = 'https://your-backend-url.com'; // Replace with your actual deployed backend URL
+      
+      const response = await fetch(`${apiUrl}/predict/`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          // Add CORS headers if needed
+          'Accept': 'application/json',
+        },
         body: JSON.stringify(formData)
       });
-      console.log('Response status:', response.status); // Log status
-      if (!response.ok) throw new Error('Network response was not ok');
+      
+      console.log('Response status:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+      
       const data = await response.json();
-      console.log('Response data:', data); // Log the response
+      console.log('Response data:', data);
       setResult(data.result);
     } catch (error) {
       console.error('Error:', error);
-      setResult('Error occurred');
+      setResult(`Error: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -48,6 +66,7 @@ const PredictionForm = () => {
           value={formData.pregnancies}
           onChange={handleChange}
           placeholder="Number of times pregnant"
+          min="0"
           required
         />
       </div>
@@ -59,6 +78,7 @@ const PredictionForm = () => {
           value={formData.glucose}
           onChange={handleChange}
           placeholder="Enter glucose level (mg/dL)"
+          min="0"
           required
         />
       </div>
@@ -70,6 +90,7 @@ const PredictionForm = () => {
           value={formData.bloodPressure}
           onChange={handleChange}
           placeholder="Diastolic BP (mm Hg)"
+          min="0"
           required
         />
       </div>
@@ -81,6 +102,7 @@ const PredictionForm = () => {
           value={formData.skinThickness}
           onChange={handleChange}
           placeholder="Triceps skin fold (mm)"
+          min="0"
           required
         />
       </div>
@@ -92,6 +114,7 @@ const PredictionForm = () => {
           value={formData.insulin}
           onChange={handleChange}
           placeholder="2-Hour serum insulin (mu U/ml)"
+          min="0"
           required
         />
       </div>
@@ -99,10 +122,12 @@ const PredictionForm = () => {
         <label>BMI:</label>
         <input
           type="number"
+          step="0.1"
           name="bmi"
           value={formData.bmi}
           onChange={handleChange}
           placeholder="Enter BMI"
+          min="0"
           required
         />
       </div>
@@ -110,11 +135,12 @@ const PredictionForm = () => {
         <label>Diabetes Pedigree:</label>
         <input
           type="number"
-          step="0.01"
+          step="0.001"
           name="diabetesPedigree"
           value={formData.diabetesPedigree}
           onChange={handleChange}
           placeholder="Likelihood based on family history"
+          min="0"
           required
         />
       </div>
@@ -126,11 +152,15 @@ const PredictionForm = () => {
           value={formData.age}
           onChange={handleChange}
           placeholder="Enter age"
+          min="1"
+          max="120"
           required
         />
       </div>
-      <button type="submit">Predict</button>
-      <div id="result">{result}</div>
+      <button type="submit" disabled={loading}>
+        {loading ? 'Predicting...' : 'Predict'}
+      </button>
+      {result && <div id="result">{result}</div>}
     </form>
   );
 };
