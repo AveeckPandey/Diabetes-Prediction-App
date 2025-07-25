@@ -18,7 +18,7 @@ A machine learning web application that predicts whether a person is **positive*
 | Category      | Tools/Frameworks             |
 |---------------|------------------------------|
 | ML & Data     | `scikit-learn`, `pandas`, `numpy` |
-| Backend/API   | `Flask` or `Streamlit`       |
+| Backend/API   | `FastAPI`|
 | Frontend (if any) | `React` (optional) |
 | Testing    | `PostMan` |
 
