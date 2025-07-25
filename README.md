@@ -28,7 +28,7 @@ A machine learning web application that predicts whether a person is **positive*
 
 | Input Form | Prediction Result |
 |------------|------------------|
-| ![form](assets/form.png) | ![result](assets/result.png) |
+| ![form](assets/Home.png) | ![result](assets/positive.png) |
 
 ---
 
