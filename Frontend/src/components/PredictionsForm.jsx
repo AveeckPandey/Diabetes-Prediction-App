@@ -13,7 +13,6 @@ const PredictionForm = () => {
   });
 
   const [result, setResult] = useState('');
-  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -21,38 +20,36 @@ const PredictionForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    console.log('Sending data:', formData);
-    
+    console.log('Sending data:', formData); // Log the data being sent
+
+    // Validate required fields
+    if (!formData.pregnancies || !formData.glucose || !formData.bmi || !formData.age) {
+      console.error('Missing required fields:', formData);
+      setResult('Please fill all required fields');
+      return;
+    }
+
     try {
-      // Use environment variable for API URL, fallback to localhost for development
-      const apiUrl = 'https://your-backend-url.com'; // Replace with your actual deployed backend URL
-      
-      const response = await fetch(`${apiUrl}/predict/`, {
+      const API_URL = import.meta.env.VITE_API_URL || 'https://your-project.vercel.app/api/predict/';
+      console.log('Using API_URL:', API_URL); // Log the URL being used
+      if (!/^(http|https):\/\/[^ "]+$/.test(API_URL)) {
+        console.error('Malformed URI detected:', API_URL);
+        setResult('Invalid URL configuration');
+        return;
+      }
+      const response = await fetch(API_URL, {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          // Add CORS headers if needed
-          'Accept': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
-      
-      console.log('Response status:', response.status);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
-      }
-      
+      console.log('Response status:', response.status); // Log status
+      if (!response.ok) throw new Error(`Network response was not ok: ${response.status}`);
       const data = await response.json();
-      console.log('Response data:', data);
+      console.log('Response data:', data); // Log the response
       setResult(data.result);
     } catch (error) {
       console.error('Error:', error);
-      setResult(`Error: ${error.message}`);
-    } finally {
-      setLoading(false);
+      setResult('Error occurred');
     }
   };
 
@@ -66,8 +63,8 @@ const PredictionForm = () => {
           value={formData.pregnancies}
           onChange={handleChange}
           placeholder="Number of times pregnant"
-          min="0"
           required
+          min="0"
         />
       </div>
       <div>
@@ -78,8 +75,8 @@ const PredictionForm = () => {
           value={formData.glucose}
           onChange={handleChange}
           placeholder="Enter glucose level (mg/dL)"
-          min="0"
           required
+          min="0"
         />
       </div>
       <div>
@@ -90,8 +87,8 @@ const PredictionForm = () => {
           value={formData.bloodPressure}
           onChange={handleChange}
           placeholder="Diastolic BP (mm Hg)"
-          min="0"
           required
+          min="0"
         />
       </div>
       <div>
@@ -102,8 +99,8 @@ const PredictionForm = () => {
           value={formData.skinThickness}
           onChange={handleChange}
           placeholder="Triceps skin fold (mm)"
-          min="0"
           required
+          min="0"
         />
       </div>
       <div>
@@ -114,34 +111,34 @@ const PredictionForm = () => {
           value={formData.insulin}
           onChange={handleChange}
           placeholder="2-Hour serum insulin (mu U/ml)"
-          min="0"
           required
+          min="0"
         />
       </div>
       <div>
         <label>BMI:</label>
         <input
           type="number"
-          step="0.1"
           name="bmi"
           value={formData.bmi}
           onChange={handleChange}
           placeholder="Enter BMI"
-          min="0"
           required
+          min="0"
+          step="0.1"
         />
       </div>
       <div>
         <label>Diabetes Pedigree:</label>
         <input
           type="number"
-          step="0.001"
+          step="0.01"
           name="diabetesPedigree"
           value={formData.diabetesPedigree}
           onChange={handleChange}
           placeholder="Likelihood based on family history"
-          min="0"
           required
+          min="0"
         />
       </div>
       <div>
@@ -152,15 +149,12 @@ const PredictionForm = () => {
           value={formData.age}
           onChange={handleChange}
           placeholder="Enter age"
-          min="1"
-          max="120"
           required
+          min="0"
         />
       </div>
-      <button type="submit" disabled={loading}>
-        {loading ? 'Predicting...' : 'Predict'}
-      </button>
-      {result && <div id="result">{result}</div>}
+      <button type="submit">Predict</button>
+      <div id="result">{result}</div>
     </form>
   );
 };
