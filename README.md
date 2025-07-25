@@ -28,7 +28,7 @@ A machine learning web application that predicts whether a person is **positive*
 
 | Input Form | Prediction Result |
 |------------|------------------|
-| ![form](https://github.com/AveeckPandey/Diabetes-Prediction-App/blob/main/Frontend/src/assets/Home.png) | ![result](assets/positive.png) |
+| ![form](https://github.com/AveeckPandey/Diabetes-Prediction-App/blob/main/Frontend/src/assets/Home.png) | ![result](https://github.com/AveeckPandey/Diabetes-Prediction-App/blob/main/Frontend/src/assets/Negative.png?raw=true) |
 
 ---
 
